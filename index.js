@@ -104,6 +104,15 @@ app.get(
   }
 );
 
+app.get("/accounts", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM ml_accounts");
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 app.listen(PORT, () => {
   console.log("Servidor rodando na porta " + PORT);
 });
