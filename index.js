@@ -2,6 +2,29 @@ import express from "express";
 import axios from "axios";
 import dotenv from "dotenv";
 
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+async function createTable() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS ml_accounts (
+      id SERIAL PRIMARY KEY,
+      user_id TEXT,
+      access_token TEXT,
+      refresh_token TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+}
+
+createTable();
+
 dotenv.config();
 
 const app = express();
