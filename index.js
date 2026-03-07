@@ -19,10 +19,16 @@ async function createTable() {
     CREATE TABLE IF NOT EXISTS ml_accounts (
       id SERIAL PRIMARY KEY,
       user_id TEXT UNIQUE,
+      account_name TEXT,
       access_token TEXT,
       refresh_token TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+  `);
+
+  await pool.query(`
+    ALTER TABLE ml_accounts
+    ADD COLUMN IF NOT EXISTS account_name TEXT;
   `);
 }
 
@@ -263,10 +269,82 @@ app.get(
       );
 
       res.send(`
-        <h1>Autenticado com sucesso!</h1>
-        <p>Conta vinculada (user_id: ${user_id})</p>
-        <p>Tokens salvos no banco ✅</p>
-      `);
+  <!DOCTYPE html>
+  <html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nomear conta</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f7fb;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .box {
+        background: white;
+        padding: 32px;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        width: 100%;
+        max-width: 420px;
+      }
+      h1 {
+        margin-bottom: 10px;
+        font-size: 24px;
+      }
+      p {
+        color: #6b7280;
+        margin-bottom: 20px;
+      }
+      input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        margin-bottom: 16px;
+        font-size: 16px;
+      }
+      button {
+        width: 100%;
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #1d4ed8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <h1>Conta conectada com sucesso</h1>
+      <p>Agora dê um nome para identificar essa conta no sistema.</p>
+
+      <form method="GET" action="/salvar-nome-conta">
+        <input type="hidden" name="user_id" value="${user_id}" />
+        <input
+          type="text"
+          name="account_name"
+          placeholder="Ex: Loja Principal"
+          required
+        />
+        <button type="submit">Salvar nome da conta</button>
+      </form>
+    </div>
+  </body>
+  </html>
+`);
+
     } catch (error) {
       res.status(500).send(`
         <h2>Erro ao trocar code por token</h2>
@@ -280,6 +358,30 @@ app.get("/accounts", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM ml_accounts");
     res.json(result.rows);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.get("/salvar-nome-conta", async (req, res) => {
+  const { user_id, account_name } = req.query;
+
+  if (!user_id || !account_name) {
+    return res.status(400).send("Dados inválidos");
+  }
+
+  try {
+    await pool.query(
+      `
+      UPDATE ml_accounts
+      SET account_name = $1
+      WHERE user_id = $2
+      `,
+      [account_name, user_id]
+    );
+
+    res.redirect("/accounts");
+
   } catch (err) {
     res.status(500).send(err.message);
   }
