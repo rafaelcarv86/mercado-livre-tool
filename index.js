@@ -37,10 +37,182 @@ const REDIRECT_URI = process.env.ML_REDIRECT_URI;
 
 app.get("/", (req, res) => {
   res.send(`
-    <h1>Integração Mercado Livre</h1>
-    <a href="/auth/mercadolivre">
-      <button>Conectar conta do Mercado Livre</button>
-    </a>
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>AllResult - Painel</title>
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: Arial, sans-serif;
+        }
+
+        body {
+          display: flex;
+          background: #f5f7fb;
+          color: #1f2937;
+        }
+
+        .sidebar {
+          width: 240px;
+          min-height: 100vh;
+          background: #111827;
+          color: white;
+          padding: 24px 16px;
+        }
+
+        .logo {
+          font-size: 22px;
+          font-weight: bold;
+          margin-bottom: 32px;
+        }
+
+        .menu a {
+          display: block;
+          color: #d1d5db;
+          text-decoration: none;
+          padding: 12px 14px;
+          border-radius: 10px;
+          margin-bottom: 8px;
+          transition: 0.2s;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+          background: #1f2937;
+          color: white;
+        }
+
+        .main {
+          flex: 1;
+          padding: 24px;
+        }
+
+        .topbar {
+          background: white;
+          border-radius: 14px;
+          padding: 18px 22px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+          margin-bottom: 24px;
+        }
+
+        .page-title {
+          font-size: 24px;
+          font-weight: bold;
+        }
+
+        .cards {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 16px;
+          margin-bottom: 24px;
+        }
+
+        .card {
+          background: white;
+          border-radius: 14px;
+          padding: 20px;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+        }
+
+        .card h3 {
+          font-size: 14px;
+          color: #6b7280;
+          margin-bottom: 8px;
+        }
+
+        .card p {
+          font-size: 28px;
+          font-weight: bold;
+        }
+
+        .panel {
+          background: white;
+          border-radius: 14px;
+          padding: 24px;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+        }
+
+        .panel h2 {
+          margin-bottom: 12px;
+        }
+
+        .panel p {
+          color: #6b7280;
+          margin-bottom: 18px;
+        }
+
+        .btn {
+          display: inline-block;
+          background: #2563eb;
+          color: white;
+          text-decoration: none;
+          padding: 12px 18px;
+          border-radius: 10px;
+          font-weight: bold;
+          transition: 0.2s;
+        }
+
+        .btn:hover {
+          background: #1d4ed8;
+        }
+      </style>
+    </head>
+    <body>
+      <aside class="sidebar">
+        <div class="logo">AllResult</div>
+
+        <nav class="menu">
+          <a href="/" class="active">Dashboard</a>
+          <a href="/accounts">Contas conectadas</a>
+          <a href="#">Produtos</a>
+          <a href="#">Calculadora</a>
+          <a href="#">Configurações</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <div class="topbar">
+          <div class="page-title">Painel Mercado Livre</div>
+          <a href="/auth/mercadolivre" class="btn">Conectar nova conta</a>
+        </div>
+
+        <section class="cards">
+          <div class="card">
+            <h3>Contas conectadas</h3>
+            <p>1</p>
+          </div>
+
+          <div class="card">
+            <h3>Status da integração</h3>
+            <p>OK</p>
+          </div>
+
+          <div class="card">
+            <h3>Banco de dados</h3>
+            <p>ON</p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Bem-vindo ao painel</h2>
+          <p>
+            Aqui você vai conectar contas do Mercado Livre, importar produtos
+            e usar sua calculadora de preço.
+          </p>
+
+          <a href="/auth/mercadolivre" class="btn">Conectar conta do Mercado Livre</a>
+        </section>
+      </main>
+    </body>
+    </html>
   `);
 });
 
