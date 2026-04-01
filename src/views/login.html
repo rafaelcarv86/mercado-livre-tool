@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ebox Connect</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0b0b0b, #141414);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 980px;
+      min-height: 540px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+      background: #111;
+    }
+
+    .left {
+      background: linear-gradient(160deg, #6d28d9, #4c1d95);
+      color: white;
+      padding: 42px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .headline {
+      font-size: 34px;
+      line-height: 1.2;
+      font-weight: bold;
+      margin-bottom: 20px;
+      max-width: 420px;
+    }
+
+    .subtext {
+      font-size: 16px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 420px;
+    }
+
+    .right {
+      background: #151515;
+      padding: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .logo-right {
+      width: 150px;
+      max-width: 100%;
+      display: block;
+      margin-bottom: 28px;
+    }
+
+    .title {
+      color: white;
+      font-size: 30px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #a1a1aa;
+      font-size: 15px;
+      margin-bottom: 24px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-group label {
+      display: block;
+      color: #d4d4d8;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 14px 14px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #0d0d0d;
+      color: white;
+      font-size: 15px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .input-group input:focus {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #f59e0b;
+      color: #111;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background: #e68900;
+    }
+
+    .footer {
+      margin-top: 18px;
+      text-align: center;
+      color: #a1a1aa;
+      font-size: 14px;
+    }
+
+    .footer a {
+      color: #f59e0b;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .left,
+      .right {
+        padding: 32px;
+      }
+
+      .headline {
+        font-size: 28px;
+      }
+
+      .logo-right {
+        width: 130px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left">
+      <div class="headline">
+        Venda mais no Mercado Livre com inteligência
+      </div>
+
+      <div class="subtext">
+        Conecte sua conta, analise seus anúncios e descubra exatamente
+        o que melhorar para aumentar suas vendas.
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="card">
+        <img src="/assets/logo.png" alt="Ebox Connect" class="logo-right" />
+
+        <div class="title">Entrar</div>
+        <div class="subtitle">Acesse seu painel</div>
+
+        <form method="POST" action="/login">
+          <div class="input-group">
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" required />
+          </div>
+
+          <div class="input-group">
+            <label for="password">Senha</label>
+            <input id="password" type="password" name="password" required />
+          </div>
+
+          <button class="btn" type="submit">Entrar</button>
+        </form>
+
+        <div class="footer">
+          Não tem conta? <a href="/register">Criar conta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
