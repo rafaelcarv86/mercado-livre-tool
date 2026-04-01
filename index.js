@@ -3,10 +3,12 @@ import axios from "axios";
 import dotenv from "dotenv";
 import pkg from "pg";
 
+// ✅ CARREGA ENV PRIMEIRO (ESSENCIAL)
 dotenv.config();
 
 const { Pool } = pkg;
 
+// ✅ CONEXÃO COM BANCO (NEON)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -14,7 +16,7 @@ const pool = new Pool({
   },
 });
 
-// ✅ criar tabela (APENAS SQL aqui)
+// ✅ CRIAR TABELA
 async function createTable() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS ml_accounts (
@@ -36,6 +38,7 @@ const CLIENT_ID = process.env.ML_CLIENT_ID;
 const CLIENT_SECRET = process.env.ML_CLIENT_SECRET;
 const REDIRECT_URI = process.env.ML_REDIRECT_URI;
 
+// ✅ HOME
 app.get("/", (req, res) => {
   res.send(`
     <h1>AllResult</h1>
@@ -43,11 +46,13 @@ app.get("/", (req, res) => {
   `);
 });
 
+// ✅ REDIRECIONA PARA LOGIN ML
 app.get("/auth/mercadolivre", (req, res) => {
   const authUrl = `https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}`;
   res.redirect(authUrl);
 });
 
+// ✅ CALLBACK
 app.get("/auth/mercadolivre/callback", async (req, res) => {
   const { code } = req.query;
 
@@ -56,6 +61,7 @@ app.get("/auth/mercadolivre/callback", async (req, res) => {
   }
 
   try {
+    // 🔁 troca code por token
     const response = await axios.post("https://api.mercadolibre.com/oauth/token", {
       grant_type: "authorization_code",
       client_id: CLIENT_ID,
@@ -66,13 +72,14 @@ app.get("/auth/mercadolivre/callback", async (req, res) => {
 
     const { access_token, refresh_token } = response.data;
 
+    // 👤 pega dados do usuário
     const me = await axios.get("https://api.mercadolibre.com/users/me", {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 
     const user_id = String(me.data.id);
 
-    // ✅ AGORA SIM: salvar no banco
+    // 💾 salva no banco
     await pool.query(
       `
       INSERT INTO ml_accounts (user_id, access_token, refresh_token)
@@ -93,10 +100,12 @@ app.get("/auth/mercadolivre/callback", async (req, res) => {
     `);
 
   } catch (error) {
-    res.status(500).send(error.response?.data || error.message);
+    console.error(error.response?.data || error.message);
+    res.status(500).send("Erro na autenticação");
   }
 });
 
+// ✅ START SERVER
 app.listen(PORT, () => {
   console.log("Servidor rodando na porta " + PORT);
 });
