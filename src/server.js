@@ -24,7 +24,7 @@ app.use(
 
 app.use(pageRoutes);
 app.use(authRoutes);
-app.use(mlRoutes);
+app.use("/", mlRoutes);
 
 createTables().then(() => {
   app.listen(PORT, () => {

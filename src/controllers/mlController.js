@@ -63,3 +63,16 @@ export async function mercadoLivreCallback(req, res) {
   `);
 }
 }
+export async function getMLAccounts(req, res) {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM ml_accounts WHERE app_user_id = $1",
+      [req.session.userId]
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error("ERRO AO BUSCAR CONTAS:", error);
+    res.status(500).send("Erro ao buscar contas");
+  }
+}
