@@ -55,7 +55,11 @@ export async function mercadoLivreCallback(req, res) {
    res.redirect("/autenticacoes");
    
   } catch (error) {
-    console.error(error.response?.data || error.message);
-    res.status(500).send("Erro ao conectar com Mercado Livre");
-  }
+  console.error("ERRO ML:", error.response?.data || error.message);
+
+  res.send(`
+    <h2>Erro ao conectar com Mercado Livre</h2>
+    <pre>${JSON.stringify(error.response?.data || error.message, null, 2)}</pre>
+  `);
+}
 }
