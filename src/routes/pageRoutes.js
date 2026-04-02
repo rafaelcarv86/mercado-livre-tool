@@ -1,15 +1,23 @@
-import { Router } from "express";
+import express from "express";
 import {
   showDashboard,
   showLoginPage,
   showRegisterPage,
+  updateAccountName,
+  showAuthPage
 } from "../controllers/pageController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
-const router = Router();
+const router = express.Router();
 
-router.get("/", authMiddleware, showDashboard);
+router.get("/", authMiddleware, (req, res) => {
+  res.redirect("/dashboard");
+});
+
+router.get("/dashboard", authMiddleware, showDashboard);
 router.get("/login", showLoginPage);
 router.get("/register", showRegisterPage);
+router.get("/autenticacoes", authMiddleware, showAuthPage);
+router.post("/api/update-account-name", updateAccountName);
 
 export default router;

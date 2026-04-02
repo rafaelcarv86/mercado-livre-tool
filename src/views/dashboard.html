@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Ebox Connect</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #0f0f10;
+      color: white;
+      min-height: 100vh;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: #151518;
+      border-right: 1px solid #26262b;
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .logo {
+      width: 140px;
+      margin-bottom: 32px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .menu a {
+      text-decoration: none;
+      color: #cfcfd4;
+      padding: 14px 16px;
+      border-radius: 12px;
+      transition: 0.2s;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .menu a:hover {
+      background: #222228;
+      color: white;
+    }
+
+    .menu a.active {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #111;
+    }
+
+    .logout {
+      margin-top: 30px;
+    }
+
+    .logout a {
+      display: block;
+      text-decoration: none;
+      text-align: center;
+      background: #27272a;
+      color: white;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .logout a:hover {
+      background: #323238;
+    }
+
+    .content {
+      flex: 1;
+      padding: 32px;
+      background: linear-gradient(180deg, #111214, #0d0d0f);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .title h1 {
+      font-size: 32px;
+      margin-bottom: 6px;
+    }
+
+    .title p {
+      color: #9ca3af;
+      font-size: 15px;
+    }
+
+    .status-box {
+      background: #19191d;
+      border: 1px solid #2a2a31;
+      padding: 14px 18px;
+      border-radius: 12px;
+      color: #d4d4d8;
+      font-size: 14px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .card {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .card h3 {
+      color: #a1a1aa;
+      font-size: 14px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .card .value {
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .panel {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .panel h2 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .panel p {
+      color: #a1a1aa;
+      line-height: 1.7;
+      margin-bottom: 20px;
+      max-width: 780px;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #111;
+      font-weight: bold;
+      padding: 14px 18px;
+      border-radius: 12px;
+    }
+
+    .btn:hover {
+      opacity: 0.92;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #26262b;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div>
+        <img src="/assets/logo.png" alt="Ebox Connect" class="logo" />
+
+        <nav class="menu">
+          <a href="/dashboard" class="active">Dashboard</a>
+          <a href="/analise">Análise</a>
+          <a href="/autenticacoes">Autenticações</a>
+        </nav>
+      </div>
+
+      <div class="logout">
+        <a href="/logout">Sair</a>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <div class="title">
+          <h1>Dashboard</h1>
+          <p>Visão geral inicial do Ebox Connect</p>
+        </div>
+
+        <div class="status-box">
+          Sistema online
+        </div>
+      </div>
+
+      <section class="cards">
+        <div class="card">
+          <h3>Contas conectadas</h3>
+          <div class="value">1</div>
+        </div>
+
+        <div class="card">
+          <h3>Status da integração</h3>
+          <div class="value">OK</div>
+        </div>
+
+        <div class="card">
+          <h3>Próximo passo</h3>
+          <div class="value">Produtos</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Bem-vindo ao painel interno</h2>
+        <p>
+          Essa é a base da sua área logada. Daqui vamos evoluir para análise de
+          desempenho, autenticações do Mercado Livre e listagem de produtos.
+        </p>
+
+        <a class="btn" href="/auth/mercadolivre">Conectar conta do Mercado Livre</a>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

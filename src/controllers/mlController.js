@@ -52,11 +52,8 @@ export async function mercadoLivreCallback(req, res) {
       [mlUserId, access_token, refresh_token, req.session.userId]
     );
 
-    res.send(`
-      <h2>Conta conectada com sucesso</h2>
-      <p>ML User ID: ${mlUserId}</p>
-      <a href="/">Voltar ao painel</a>
-    `);
+   res.redirect("/autenticacoes");
+   
   } catch (error) {
     console.error(error.response?.data || error.message);
     res.status(500).send("Erro ao conectar com Mercado Livre");

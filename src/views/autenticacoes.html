@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Autenticações - Ebox Connect</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      background: #0f0f0f;
+      color: white;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 220px;
+      height: 100vh;
+      background: #111;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .logo {
+      width: 140px;
+      margin-bottom: 30px;
+    }
+
+    .menu a {
+      display: block;
+      color: #aaa;
+      text-decoration: none;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .menu a.active {
+      background: #ff9900;
+      color: black;
+      font-weight: bold;
+    }
+
+    .logout {
+      background: #222;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      color: #aaa;
+    }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      padding: 40px;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .subtitle {
+      color: #aaa;
+      margin-bottom: 30px;
+    }
+
+    /* HEADER MARKETPLACE */
+    .market-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .market-title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .market-sub {
+      color: #888;
+      font-size: 14px;
+    }
+
+    .btn-connect {
+      background: #ff9900;
+      color: black;
+      padding: 10px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .btn-connect:hover {
+      opacity: 0.9;
+    }
+
+    /* ACCOUNTS GRID */
+    .accounts {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 12px;
+      width: 260px;
+      position: relative;
+    }
+
+    .card-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .card-id {
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .status {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #2ecc71;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .edit {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #ff9900;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div>
+      <img src="/assets/logo.png" class="logo" />
+
+      <div class="menu">
+        <a href="/dashboard">Dashboard</a>
+        <a href="#">Análise</a>
+        <a href="/autenticacoes" class="active">Autenticações</a>
+      </div>
+    </div>
+
+    <div class="logout">Sair</div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="title">Autenticações</div>
+    <div class="subtitle">Gerencie suas contas conectadas</div>
+
+    <!-- HEADER DO MARKETPLACE -->
+    <div class="market-header">
+      <div>
+        <div class="market-title">Mercado Livre</div>
+        <div class="market-sub">Conecte e gerencie suas contas</div>
+      </div>
+
+      <!-- 🔥 BOTÃO CORRIGIDO -->
+     <button class="btn-connect" onclick="window.location.href='/auth/mercadolivre'">
+  + Conectar conta
+</button>
+
+    <!-- CONTAS -->
+    <div class="accounts">
+
+      <!-- EXEMPLO DE CARD -->
+      <div class="card">
+        <div class="status">Conectado</div>
+
+        <div class="card-title">Conta principal</div>
+        <div class="card-id">ID: 123456789</div>
+
+        <div class="edit">✏️ Editar nome</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>

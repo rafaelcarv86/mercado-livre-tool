@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { pool } from "../db/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,4 +21,19 @@ export function showRegisterPage(req, res) {
 
 export function showDashboard(req, res) {
   res.send(readView("dashboard.html"));
+}
+
+export function showAuthPage(req, res) {
+  res.send(readView("autenticacoes.html"));
+}
+
+export async function updateAccountName(req, res) {
+  const { name } = req.body;
+
+  await pool.query(
+    "UPDATE ml_accounts SET name = $1 WHERE id = $2",
+    [name, 1] // depois vamos pegar o ID real
+  );
+
+  res.sendStatus(200);
 }
