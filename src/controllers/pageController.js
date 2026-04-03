@@ -28,11 +28,11 @@ export function showAuthPage(req, res) {
 }
 
 export async function updateAccountName(req, res) {
-  const { name } = req.body;
+  const { id, name } = req.body;
 
   await pool.query(
     "UPDATE ml_accounts SET name = $1 WHERE id = $2",
-    [name, 1] // depois vamos pegar o ID real
+    [name, id]
   );
 
   res.sendStatus(200);
