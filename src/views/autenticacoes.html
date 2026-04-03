@@ -207,15 +207,19 @@ window.onload = async function () {
       const div = document.createElement('div');
       div.className = 'card';
 
-      div.innerHTML = `
-        <div class="card-header">
-          <div class="card-title">${conta.name || 'Conta ML'}</div>
-          <div class="edit">✏️</div>
-          <div class="status">Conectado</div>
-        </div>
+  div.innerHTML = `
+  <div class="card-header">
+    <div class="card-title">${conta.name || 'Conta ML'}</div>
+    <div class="edit">✏️</div>
+    <div class="status">Conectado</div>
+  </div>
 
-        <div class="card-id">ID: ${conta.ml_user_id}</div>
-      `;
+  <div class="card-id">ID: ${conta.ml_user_id}</div>
+
+  <div class="delete" style="margin-top:10px; color:#ff4d4d; cursor:pointer;">
+    🗑️ Desconectar
+  </div>
+`;
 
       div.querySelector(".edit").onclick = async () => {
         const novoNome = prompt("Novo nome:", conta.name || '');
@@ -235,6 +239,24 @@ window.onload = async function () {
 
         location.reload();
       };
+
+      div.querySelector(".delete").onclick = async () => {
+  const confirmDelete = confirm("Tem certeza que deseja desconectar essa conta?");
+
+  if (!confirmDelete) return;
+
+  await fetch('/api/delete-account', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      id: conta.id
+    })
+  });
+
+  location.reload();
+};
 
       container.appendChild(div);
     });

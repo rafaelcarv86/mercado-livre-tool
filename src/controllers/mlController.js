@@ -52,17 +52,18 @@ export async function mercadoLivreCallback(req, res) {
       [mlUserId, access_token, refresh_token, req.session.userId]
     );
 
-   res.redirect("/autenticacoes");
-   
-  } catch (error) {
-  console.error("ERRO ML:", error.response?.data || error.message);
+    res.redirect("/autenticacoes");
 
-  res.send(`
-    <h2>Erro ao conectar com Mercado Livre</h2>
-    <pre>${JSON.stringify(error.response?.data || error.message, null, 2)}</pre>
-  `);
+  } catch (error) {
+    console.error("ERRO ML:", error.response?.data || error.message);
+
+    res.send(`
+      <h2>Erro ao conectar com Mercado Livre</h2>
+      <pre>${JSON.stringify(error.response?.data || error.message, null, 2)}</pre>
+    `);
+  }
 }
-}
+
 export async function getMLAccounts(req, res) {
   try {
     const result = await pool.query(
@@ -74,5 +75,48 @@ export async function getMLAccounts(req, res) {
   } catch (error) {
     console.error("ERRO AO BUSCAR CONTAS:", error);
     res.status(500).send("Erro ao buscar contas");
+  }
+}
+
+// ✅ NOVA FUNÇÃO (ESSA RESOLVE SEU PROBLEMA)
+export async function updateAccountName(req, res) {
+  try {
+    const { id, name } = req.body;
+
+    if (!id || !name) {
+      return res.status(400).json({ error: "Dados inválidos" });
+    }
+
+    await pool.query(
+      "UPDATE ml_accounts SET name = $1 WHERE id = $2",
+      [name, id]
+    );
+
+    res.json({ success: true });
+
+  } catch (error) {
+    console.error("ERRO AO ATUALIZAR NOME:", error);
+    res.status(500).json({ error: "Erro ao atualizar nome" });
+  }
+}
+
+export async function deleteAccount(req, res) {
+  try {
+    const { id } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ error: "ID obrigatório" });
+    }
+
+    await pool.query(
+      "DELETE FROM ml_accounts WHERE id = $1 AND app_user_id = $2",
+      [id, req.session.userId]
+    );
+
+    res.json({ success: true });
+
+  } catch (error) {
+    console.error("ERRO AO DELETAR CONTA:", error);
+    res.status(500).json({ error: "Erro ao deletar conta" });
   }
 }
