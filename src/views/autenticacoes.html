@@ -115,17 +115,18 @@
       padding: 20px;
       border-radius: 12px;
       width: 260px;
-      position: relative;
     }
 
     .card-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
     }
 
     .card-title {
       font-weight: bold;
+      flex: 1;
     }
 
     .card-id {
@@ -135,19 +136,24 @@
     }
 
     .status {
-      position: absolute;
-      top: 15px;
-      right: 15px;
       background: #2ecc71;
       padding: 5px 10px;
       border-radius: 20px;
       font-size: 12px;
+      white-space: nowrap;
     }
 
     .edit {
       cursor: pointer;
       color: #ff9900;
-      font-size: 16px;
+      font-size: 14px;
+      opacity: 0.85;
+      transition: 0.2s;
+    }
+
+    .edit:hover {
+      opacity: 1;
+      transform: scale(1.1);
     }
   </style>
 </head>
@@ -202,11 +208,10 @@ window.onload = async function () {
       div.className = 'card';
 
       div.innerHTML = `
-        <div class="status">Conectado</div>
-
         <div class="card-header">
           <div class="card-title">${conta.name || 'Conta ML'}</div>
           <div class="edit">✏️</div>
+          <div class="status">Conectado</div>
         </div>
 
         <div class="card-id">ID: ${conta.ml_user_id}</div>
