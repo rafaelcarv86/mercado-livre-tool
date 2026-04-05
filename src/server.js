@@ -24,6 +24,12 @@ app.use(
   })
 );
 
+app.get("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/login");
+  });
+});
+
 app.use(pageRoutes);
 app.use(authRoutes);
 app.use("/", mlRoutes);

@@ -14,10 +14,13 @@ router.get("/", authMiddleware, (req, res) => {
   res.redirect("/dashboard");
 });
 
+router.get("/anuncios", (req, res) => {
+  res.sendFile("anuncios.html", { root: "./src/views" });
+});
+
 router.get("/dashboard", authMiddleware, showDashboard);
 router.get("/login", showLoginPage);
 router.get("/register", showRegisterPage);
 router.get("/autenticacoes", authMiddleware, showAuthPage);
-router.post("/api/update-account-name", updateAccountName);
 
 export default router;

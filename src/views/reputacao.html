@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Reputação - Ebox Connect</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      background: #0f0f0f;
+      color: white;
+    }
+
+    .sidebar {
+      width: 220px;
+      height: 100vh;
+      background: #111;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .logo {
+      width: 140px;
+      margin-bottom: 30px;
+    }
+
+    .menu a {
+      display: block;
+      color: #aaa;
+      text-decoration: none;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .menu a.active {
+      background: #ff9900;
+      color: black;
+      font-weight: bold;
+    }
+
+    .logout {
+      background: #222;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      color: #aaa;
+    }
+
+    .main {
+      flex: 1;
+      padding: 40px;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+    }
+
+    /* ===== HEADER REPUTAÇÃO ===== */
+
+    .rep-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .rep-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .rep-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .bar {
+      width: 40px;
+      height: 8px;
+      border-radius: 5px;
+      opacity: 0.3;
+    }
+
+    .bar.active {
+      opacity: 1;
+    }
+
+    .red { background: #e74c3c; }
+    .orange { background: #e67e22; }
+    .yellow { background: #f1c40f; }
+    .lightgreen { background: #a3d977; }
+    .green { background: #2ecc71; }
+
+    .rep-sub {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .rep-stats {
+      display: flex;
+      gap: 40px;
+      text-align: center;
+    }
+
+    .rep-stats strong {
+      font-size: 18px;
+    }
+
+    .rep-stats span {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    /* ===== CARDS ===== */
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .mini-card {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .mini-title {
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .mini-value {
+      font-size: 22px;
+      margin-bottom: 5px;
+    }
+
+    .ok {
+      color: #2ecc71;
+    }
+
+    .warn {
+      color: #f1c40f;
+    }
+
+    .bad {
+      color: #e74c3c;
+    }
+
+    .mini-sub {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR (SEU PADRÃO) -->
+<div class="sidebar">
+  <div>
+    <img src="/assets/logo.png" class="logo" />
+
+    <div class="menu">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/anuncios">Anúncios</a>
+      <a href="/reputacao" class="active">Reputação</a>
+      <a href="/autenticacoes">Autenticações</a>      
+    </div>
+  </div>
+
+  <div class="logout">Sair</div>
+</div>
+
+<!-- CONTEÚDO -->
+<div class="main">
+  <div class="title">Reputação do vendedor</div>
+
+  <!-- CARD PRINCIPAL -->
+  <div class="card">
+    <div class="rep-header">
+      <div>
+        <div class="rep-title" id="nickname">Carregando...</div>
+
+        <div class="rep-bar">
+          <div class="bar red"></div>
+          <div class="bar orange"></div>
+          <div class="bar yellow"></div>
+          <div class="bar lightgreen"></div>
+          <div class="bar green active"></div>
+        </div>
+
+        <div class="rep-sub">Você aparece assim para os compradores</div>
+      </div>
+
+      <div class="rep-stats">
+        <div>
+          <strong id="total">0</strong><br>
+          <span>Vendas</span>
+        </div>
+
+        <div>
+          <strong id="completed">0</strong><br>
+          <span>Concluídas</span>
+        </div>
+
+        <div>
+          <strong id="canceled">0</strong><br>
+          <span>Canceladas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARDS ABAIXO -->
+  <div class="grid">
+    <div class="mini-card">
+      <div class="mini-title">Reclamações</div>
+      <div class="mini-value ok" id="claims">0%</div>
+      <div class="mini-sub">Abaixo do limite</div>
+    </div>
+
+    <div class="mini-card">
+      <div class="mini-title">Mediações</div>
+      <div class="mini-value ok">0%</div>
+      <div class="mini-sub">Dentro do esperado</div>
+    </div>
+
+    <div class="mini-card">
+      <div class="mini-title">Cancelamentos</div>
+      <div class="mini-value warn" id="cancelRate">0%</div>
+      <div class="mini-sub">Monitorar</div>
+    </div>
+
+    <div class="mini-card">
+      <div class="mini-title">Envios</div>
+      <div class="mini-value ok">OK</div>
+      <div class="mini-sub">Sem atrasos</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+async function loadSellerInfo() {
+  const res = await fetch('/api/seller-info');
+  const data = await res.json();
+
+  document.getElementById("nickname").innerText = data.nickname;
+
+  const total = data.transactions?.total || 0;
+  const completed = data.transactions?.completed || 0;
+  const canceled = data.transactions?.canceled || 0;
+  const claims = data.transactions?.claims || 0;
+
+  document.getElementById("total").innerText = total;
+  document.getElementById("completed").innerText = completed;
+  document.getElementById("canceled").innerText = canceled;
+
+  const cancelRate = total ? ((canceled / total) * 100).toFixed(2) : 0;
+  document.getElementById("cancelRate").innerText = cancelRate + "%";
+
+  const claimRate = total ? ((claims / total) * 100).toFixed(2) : 0;
+  document.getElementById("claims").innerText = claimRate + "%";
+}
+
+loadSellerInfo();
+</script>
+
+</body>
+</html>
