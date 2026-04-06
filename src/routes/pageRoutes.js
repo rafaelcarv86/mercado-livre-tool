@@ -4,7 +4,8 @@ import {
   showLoginPage,
   showRegisterPage,
   updateAccountName,
-  showAuthPage
+  showAuthPage,
+  showSalesPage
 } from "../controllers/pageController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
@@ -22,5 +23,6 @@ router.get("/dashboard", authMiddleware, showDashboard);
 router.get("/login", showLoginPage);
 router.get("/register", showRegisterPage);
 router.get("/autenticacoes", authMiddleware, showAuthPage);
+router.get("/vendas", authMiddleware, showSalesPage);
 
 export default router;

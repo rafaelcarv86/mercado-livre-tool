@@ -27,6 +27,10 @@ export function showAuthPage(req, res) {
   res.send(readView("autenticacoes.html"));
 }
 
+export function showSalesPage(req, res) {
+  res.send(readView("vendas.html"));
+}
+
 export async function updateAccountName(req, res) {
   const { id, name } = req.body;
 

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Vendas - Ebox Connect</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      background: #0f0f0f;
+      color: white;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 220px;
+      min-height: 100vh;
+      background: #111;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .logo {
+      width: 140px;
+      margin-bottom: 30px;
+    }
+
+    .menu a {
+      display: block;
+      color: #aaa;
+      text-decoration: none;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .menu a.active {
+      background: #ff9900;
+      color: black;
+      font-weight: bold;
+    }
+
+    .logout {
+      background: #222;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      color: #aaa;
+      cursor: pointer;
+    }
+
+    .main {
+      flex: 1;
+      padding: 40px;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: #aaa;
+      margin-bottom: 24px;
+    }
+
+    .filters {
+      background: #141414;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .filter-group label {
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .filter-group input,
+    .filter-group select {
+      background: #1d1d1d;
+      border: 1px solid #2a2a2a;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-search {
+      background: #ff9900;
+      color: black;
+    }
+
+    .table-wrap {
+      background: #141414;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #222;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1100px;
+    }
+
+    thead {
+      background: #1b1b1b;
+    }
+
+    th, td {
+      padding: 14px 12px;
+      text-align: left;
+      border-bottom: 1px solid #222;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    th {
+      color: #ddd;
+      font-size: 13px;
+    }
+
+    td {
+      color: #f1f1f1;
+    }
+
+    .product-cell {
+      max-width: 320px;
+      white-space: normal;
+      line-height: 1.4;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .status-paid {
+      background: #1f6f43;
+      color: #d7ffe7;
+    }
+
+    .status-cancelled {
+      background: #6f1f1f;
+      color: #ffd9d9;
+    }
+
+    .empty-state {
+      padding: 30px;
+      color: #aaa;
+      text-align: center;
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .result-count {
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    @media (max-width: 1100px) {
+      .filters {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .filters {
+        grid-template-columns: 1fr;
+      }
+
+      .main {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div>
+      <img src="/assets/logo.png" class="logo" />
+
+      <div class="menu">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/vendas" class="active">Vendas</a>
+        <a href="/anuncios">Anúncios</a>
+        <a href="/reputacao">Reputação</a>
+        <a href="/autenticacoes">Autenticações</a>
+      </div>
+    </div>
+
+    <div class="logout">Sair</div>
+  </div>
+
+  <div class="main">
+    <div class="title">Vendas</div>
+    <div class="subtitle">Acompanhe suas vendas e filtre os pedidos com mais clareza.</div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label for="search">Produto</label>
+        <input type="text" id="search" placeholder="Buscar por nome do produto">
+      </div>
+
+      <div class="filter-group">
+        <label for="status">Status</label>
+        <select id="status">
+          <option value="">Todos</option>
+          <option value="paid">Pago</option>
+          <option value="cancelled">Cancelado</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="account">Conta</label>
+        <select id="account">
+          <option value="">Todas</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="dateFrom">Data inicial</label>
+        <input type="date" id="dateFrom">
+      </div>
+
+      <button class="btn btn-search" id="btnSearch">Buscar</button>
+    </div>
+
+    <div class="top-row">
+      <div class="result-count" id="resultCount">0 vendas encontradas</div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Produto</th>
+              <th>Qtd</th>
+              <th>Valor venda</th>
+              <th>Comissão</th>
+              <th>Frete cliente</th>
+              <th>Frete real</th>
+              <th>Lucro</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="salesTableBody">
+            <tr>
+              <td colspan="9" class="empty-state">Tela criada com sucesso. No próximo passo vamos ligar os dados reais.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script>
+async function carregarVendas() {
+  const search = document.getElementById("search").value;
+  const status = document.getElementById("status").value;
+  const accountId = document.getElementById("account").value;
+  const dateFrom = document.getElementById("dateFrom").value;
+
+  const params = new URLSearchParams({
+    search,
+    status,
+    accountId,
+    dateFrom
+  });
+
+  const res = await fetch(`/api/orders?${params}`);
+  const data = await res.json();
+
+  const tbody = document.getElementById("salesTableBody");
+  const count = document.getElementById("resultCount");
+
+  tbody.innerHTML = "";
+
+  count.innerText = `${data.length} vendas encontradas`;
+
+  if (data.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" class="empty-state">Nenhuma venda encontrada</td></tr>`;
+    return;
+  }
+
+  data.forEach(order => {
+    const lucro = (order.total_amount - order.sale_fee - order.shipping_cost).toFixed(2);
+
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${new Date(order.date_created).toLocaleDateString()}</td>
+      <td class="product-cell">${order.title}</td>
+      <td>${order.quantity}</td>
+      <td>R$ ${order.total_amount}</td>
+      <td>R$ ${order.sale_fee}</td>
+      <td>R$ ${order.buyer_shipping_paid}</td>
+      <td>R$ ${order.shipping_cost}</td>
+      <td><strong>R$ ${lucro}</strong></td>
+      <td>
+        <span class="status ${order.status === 'paid' ? 'status-paid' : 'status-cancelled'}">
+          ${order.status}
+        </span>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById("btnSearch").onclick = carregarVendas;
+
+window.onload = () => {
+  carregarVendas();
+};
+</script>
+</body>
+</html>

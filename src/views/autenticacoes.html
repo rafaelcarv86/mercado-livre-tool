@@ -144,10 +144,14 @@
       color:black;
     }
 
+    .btn-orders {
+      background:#3498db;
+      color:white;
+    }
+
     .edit { cursor:pointer; color:#ff9900; }
     .delete { cursor:pointer; color:#ff4d4d; }
 
-    /* MODAL */
     #modal {
       display:none;
       position:fixed;
@@ -191,19 +195,6 @@
 
     .save { background:#ff9900; }
     .cancel { background:#333; color:white; }
-
-    #toast {
-      position:fixed;
-      top:50%;
-      left:50%;
-      transform:translate(-50%, -50%);
-      background:#1a1a1a;
-      padding:20px;
-      border-radius:12px;
-      opacity:0;
-      transition:0.3s;
-      border:1px solid #ff9900;
-    }
   </style>
 </head>
 
@@ -214,10 +205,11 @@
     <img src="/assets/logo.png" class="logo" />
 
     <div class="menu">
-      <a href="/dashboard">Dashboard</a>
-      <a href="/anuncios">Anúncios</a>
-      <a href="/reputacao">Reputação</a>
-      <a href="/autenticacoes" class="active">Autenticações</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/vendas">Vendas</a>
+        <a href="/anuncios">Anúncios</a>
+        <a href="/reputacao">Reputação</a>
+        <a href="/autenticacoes" class="active">Autenticações</a>
     </div>
   </div>
 
@@ -248,7 +240,6 @@
   </div>
 </div>
 
-<!-- MODAL -->
 <div id="modal">
   <div class="modal-box">
     <h3 style="margin-bottom:10px;">Editar conta</h3>
@@ -263,8 +254,6 @@
     </div>
   </div>
 </div>
-
-<div id="toast"></div>
 
 <script>
 let contaAtual = null;
@@ -282,36 +271,19 @@ function fechar(){
 }
 
 async function salvar() {
-  try {
-    const name = document.getElementById("inputName").value;
-    const zipcode = document.getElementById("inputZip").value;
-    const tax = document.getElementById("inputTax").value;
+  const res = await fetch('/api/update-account-name', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      id: contaAtual.id,
+      name: inputName.value,
+      zipcode: inputZip.value,
+      tax: inputTax.value
+    })
+  });
 
-    const res = await fetch('/api/update-account-name', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: contaAtual.id,
-        name,
-        zipcode,
-        tax
-      })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert("Erro: " + (data.error || "Falha ao salvar"));
-      return;
-    }
-
-    alert("Salvo com sucesso!");
-    location.reload();
-
-  } catch (err) {
-    alert("Erro na requisição");
-    console.error(err);
-  }
+  alert("Salvo!");
+  location.reload();
 }
 
 window.onload = async () => {
@@ -336,11 +308,32 @@ window.onload = async () => {
         💰 Taxa: ${conta.tax_rate || "-"}%
       </div>
 
-      <button class="btn btn-sync">🔄 Sincronizar produtos</button>
-      <div class="delete">🗑️ Desconectar</div>
+      <div class="actions">
+        <button class="btn btn-sync">🔄 Sincronizar produtos</button>
+        <button class="btn btn-orders">📦 Sincronizar pedidos</button>
+        <div class="delete">🗑️ Desconectar</div>
+      </div>
     `;
 
     div.querySelector(".edit").onclick = () => abrir(conta);
+
+    div.querySelector(".btn-sync").onclick = async () => {
+      await fetch('/api/sync-products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accountId: conta.id })
+      });
+      alert("Produtos sincronizados!");
+    };
+
+    div.querySelector(".btn-orders").onclick = async () => {
+      await fetch('/api/sync-orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accountId: conta.id })
+      });
+      alert("Pedidos sincronizados!");
+    };
 
     document.getElementById("accounts").appendChild(div);
   });

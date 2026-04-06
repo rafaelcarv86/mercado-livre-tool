@@ -1,5 +1,37 @@
 import axios from "axios";
 import { pool } from "../db/index.js";
+async function refreshAccessToken(account) {
+  try {
+    const response = await axios.post(
+      "https://api.mercadolibre.com/oauth/token",
+      {
+        grant_type: "refresh_token",
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        refresh_token: account.refresh_token,
+      }
+    );
+
+    const { access_token, refresh_token } = response.data;
+
+    // 🔥 atualiza no banco
+    await pool.query(
+      `
+      UPDATE ml_accounts
+      SET access_token = $1,
+          refresh_token = $2
+      WHERE id = $3
+      `,
+      [access_token, refresh_token, account.id]
+    );
+
+    return access_token;
+
+  } catch (error) {
+    console.error("ERRO AO ATUALIZAR TOKEN:", error.response?.data || error.message);
+    throw error;
+  }
+}
 
 const CLIENT_ID = process.env.ML_CLIENT_ID;
 const CLIENT_SECRET = process.env.ML_CLIENT_SECRET;
@@ -294,5 +326,199 @@ export async function getSellerInfo(req, res) {
   } catch (error) {
     console.error("ERRO SELLER INFO:", error.response?.data || error.message);
     res.status(500).json({ error: "Erro ao buscar dados do vendedor" });
+  }
+}
+export async function syncOrders(req, res) {
+  try {
+    const { accountId } = req.body;
+
+    const result = await pool.query(
+      "SELECT * FROM ml_accounts WHERE id = $1 AND app_user_id = $2",
+      [accountId, req.session.userId]
+    );
+
+    const account = result.rows[0];
+
+    if (!account) {
+      return res.status(404).json({ error: "Conta não encontrada" });
+    }
+
+    let accessToken = account.access_token;
+    const userId = account.ml_user_id;
+
+    let response;
+
+    // 🔄 busca pedidos com refresh automático
+    try {
+      response = await axios.get(
+        `https://api.mercadolibre.com/orders/search?seller=${userId}&sort=date_desc&limit=50`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+    } catch (error) {
+      if (error.response?.status === 401) {
+        console.log("🔄 Token expirado, atualizando...");
+        accessToken = await refreshAccessToken(account);
+
+        response = await axios.get(
+          `https://api.mercadolibre.com/orders/search?seller=${userId}&sort=date_desc&limit=50`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+      } else {
+        throw error;
+      }
+    }
+
+    const orders = response.data.results;
+
+    let inserted = 0;
+
+    for (const order of orders) {
+      const item = order.order_items?.[0]?.item;
+      if (!item) continue;
+
+      // 👉 valor que o cliente pagou
+      const buyerShipping = order.payments?.[0]?.shipping_cost || 0;
+
+      // 👉 valor real do frete (vamos buscar)
+      let realShippingCost = 0;
+
+      const shippingId = order.shipping?.id;
+
+      if (shippingId) {
+        try {
+          const shipmentResponse = await axios.get(
+            `https://api.mercadolibre.com/shipments/${shippingId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+
+          console.log("SHIPMENT COMPLETO:", JSON.stringify(shipmentResponse.data, null, 2));
+          const shipment = shipmentResponse.data;
+
+          // 🔥 tenta pegar custo real
+          realShippingCost =
+            shipment?.shipping_option?.list_cost || 0;
+
+        } catch (err) {
+          console.log("Erro ao buscar shipment:", shippingId);
+        }
+      }
+
+      await pool.query(
+        `
+        INSERT INTO orders (
+          account_id,
+          ml_order_id,
+          ml_item_id,
+          ml_listing_id,
+          title,
+          quantity,
+          unit_price,
+          total_amount,
+          sale_fee,
+          shipping_cost,
+          buyer_shipping_paid,
+          status,
+          is_cancelled,
+          cancelled_by,
+          date_created,
+          raw_json
+        )
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
+        ON CONFLICT (ml_order_id) DO NOTHING
+        `,
+        [
+          accountId,
+          order.id,
+          item.id,
+          item.id,
+          item.title,
+          order.order_items?.[0]?.quantity || 0,
+          order.order_items?.[0]?.unit_price || 0,
+          order.total_amount || 0,
+          order.order_items?.[0]?.sale_fee || 0,
+          realShippingCost,
+          buyerShipping,
+          order.status,
+          order.status === "cancelled",
+          order.cancel_detail?.by || null,
+          order.date_created,
+          order,
+        ]
+      );
+
+      inserted++;
+    }
+
+    res.json({
+      success: true,
+      totalFetched: orders.length,
+      inserted,
+    });
+
+  } catch (error) {
+    console.error("ERRO SYNC ORDERS:", error.response?.data || error.message);
+    res.status(500).json({ error: "Erro ao sincronizar pedidos" });
+  }
+}
+export async function getOrders(req, res) {
+  try {
+    const { search, status, accountId, dateFrom } = req.query;
+
+    let query = `
+      SELECT *
+      FROM orders
+      WHERE account_id IN (
+        SELECT id FROM ml_accounts WHERE app_user_id = $1
+      )
+    `;
+
+    const params = [req.session.userId];
+    let index = 2;
+
+    if (search) {
+      query += ` AND LOWER(title) LIKE LOWER($${index})`;
+      params.push(`%${search}%`);
+      index++;
+    }
+
+    if (status) {
+      query += ` AND status = $${index}`;
+      params.push(status);
+      index++;
+    }
+
+    if (accountId) {
+      query += ` AND account_id = $${index}`;
+      params.push(accountId);
+      index++;
+    }
+
+    if (dateFrom) {
+      query += ` AND date_created >= $${index}`;
+      params.push(dateFrom);
+      index++;
+    }
+
+    query += ` ORDER BY date_created DESC LIMIT 200`;
+
+    const result = await pool.query(query, params);
+
+    res.json(result.rows);
+
+  } catch (error) {
+    console.error("ERRO AO BUSCAR PEDIDOS:", error);
+    res.status(500).json({ error: "Erro ao buscar pedidos" });
   }
 }
