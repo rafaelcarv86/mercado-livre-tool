@@ -18,42 +18,9 @@
       color: white;
     }
 
-    .sidebar {
+    #sidebar-container {
       width: 220px;
-      height: 100vh;
-      background: #111;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .logo {
-      width: 140px;
-      margin-bottom: 30px;
-    }
-
-    .menu a {
-      display: block;
-      color: #aaa;
-      text-decoration: none;
-      margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 8px;
-    }
-
-    .menu a.active {
-      background: #ff9900;
-      color: black;
-      font-weight: bold;
-    }
-
-    .logout {
-      background: #222;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-      color: #aaa;
+      flex-shrink: 0;
     }
 
     .main {
@@ -73,8 +40,6 @@
       border-radius: 12px;
       margin-bottom: 25px;
     }
-
-    /* ===== HEADER REPUTAÇÃO ===== */
 
     .rep-header {
       display: flex;
@@ -130,8 +95,6 @@
       color: #aaa;
     }
 
-    /* ===== CARDS ===== */
-
     .grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -154,50 +117,26 @@
       margin-bottom: 5px;
     }
 
-    .ok {
-      color: #2ecc71;
-    }
-
-    .warn {
-      color: #f1c40f;
-    }
-
-    .bad {
-      color: #e74c3c;
-    }
+    .ok { color: #2ecc71; }
+    .warn { color: #f1c40f; }
+    .bad { color: #e74c3c; }
 
     .mini-sub {
       font-size: 12px;
       color: #aaa;
     }
-
   </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR (SEU PADRÃO) -->
-<div class="sidebar">
-  <div>
-    <img src="/assets/logo.png" class="logo" />
-
-    <div class="menu">
-        <a href="/dashboard">Dashboard</a>
-        <a href="/vendas">Vendas</a>
-        <a href="/anuncios">Anúncios</a>
-        <a href="/reputacao"class="active">Reputação</a>
-        <a href="/autenticacoes">Autenticações</a>  
-    </div>
-  </div>
-
-  <div class="logout">Sair</div>
-</div>
+<!-- SIDEBAR -->
+<div id="sidebar-container"></div>
 
 <!-- CONTEÚDO -->
 <div class="main">
   <div class="title">Reputação do vendedor</div>
 
-  <!-- CARD PRINCIPAL -->
   <div class="card">
     <div class="rep-header">
       <div>
@@ -233,7 +172,6 @@
     </div>
   </div>
 
-  <!-- CARDS ABAIXO -->
   <div class="grid">
     <div class="mini-card">
       <div class="mini-title">Reclamações</div>
@@ -259,10 +197,26 @@
       <div class="mini-sub">Sem atrasos</div>
     </div>
   </div>
-
 </div>
 
 <script>
+// 🔥 SIDEBAR
+fetch("/partials/sidebar.html")
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById("sidebar-container").innerHTML = data;
+
+    const currentPath = window.location.pathname;
+    const links = document.querySelectorAll("#sidebar-container .menu a");
+
+    links.forEach(link => {
+      if (link.getAttribute("href") === currentPath) {
+        link.classList.add("active");
+      }
+    });
+  });
+
+// 🔥 DADOS REPUTAÇÃO
 async function loadSellerInfo() {
   const res = await fetch('/api/seller-info');
   const data = await res.json();

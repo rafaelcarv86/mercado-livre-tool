@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Empresa - Ebox Connect</title>
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:Arial; }
+
+    body { display:flex; background:#0f0f0f; color:white; }
+
+    #sidebar-container {
+      width:220px;
+      flex-shrink:0;
+    }
+
+    .main {
+      flex:1;
+      padding:40px;
+      max-width:800px;
+    }
+
+    .title {
+      font-size:28px;
+      font-weight:bold;
+      margin-bottom:20px;
+    }
+
+    .form {
+      background:#141414;
+      padding:20px;
+      border-radius:12px;
+      display:flex;
+      flex-direction:column;
+      gap:15px;
+    }
+
+    .group {
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+    }
+
+    label {
+      font-size:13px;
+      color:#aaa;
+    }
+
+    input {
+      padding:10px;
+      border-radius:8px;
+      border:1px solid #2a2a2a;
+      background:#1d1d1d;
+      color:white;
+    }
+
+    .row {
+      display:flex;
+      gap:10px;
+    }
+
+    .row .group {
+      flex:1;
+    }
+
+    .btn {
+      margin-top:10px;
+      padding:12px;
+      border:none;
+      border-radius:8px;
+      background:#ff9900;
+      color:black;
+      font-weight:bold;
+      cursor:pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="sidebar-container"></div>
+
+<div class="main">
+  <div class="title">Dados da Empresa</div>
+
+  <div class="form">
+
+    <div class="group">
+      <label>Nome da empresa</label>
+      <input id="name">
+    </div>
+
+    <div class="group">
+      <label>CNPJ</label>
+      <input id="cnpj">
+    </div>
+
+    <div class="group">
+      <label>CEP</label>
+      <input id="zipcode">
+    </div>
+
+    <div class="group">
+      <label>Rua</label>
+      <input id="street">
+    </div>
+
+    <div class="row">
+      <div class="group">
+        <label>Número</label>
+        <input id="number">
+      </div>
+
+      <div class="group">
+        <label>Complemento</label>
+        <input id="complement">
+      </div>
+    </div>
+
+    <div class="group">
+      <label>Bairro</label>
+      <input id="neighborhood">
+    </div>
+
+    <div class="row">
+      <div class="group">
+        <label>Cidade</label>
+        <input id="city">
+      </div>
+
+      <div class="group">
+        <label>Estado</label>
+        <input id="state">
+      </div>
+    </div>
+
+    <div class="group">
+      <label>Taxa (%)</label>
+      <input id="tax">
+    </div>
+
+    <div class="group">
+      <label>Email</label>
+      <input id="email">
+    </div>
+
+    <div class="group">
+      <label>Telefone</label>
+      <input id="phone">
+    </div>
+
+    <button class="btn" onclick="salvar()">Salvar</button>
+  </div>
+</div>
+
+<script>
+// SIDEBAR
+fetch("/partials/sidebar.html")
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById("sidebar-container").innerHTML = data;
+  });
+
+// 🔥 MÁSCARA CNPJ
+document.getElementById("cnpj").addEventListener("input", (e) => {
+  let v = e.target.value.replace(/\D/g, "");
+  v = v.replace(/^(\d{2})(\d)/, "$1.$2");
+  v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+  v = v.replace(/\.(\d{3})(\d)/, ".$1/$2");
+  v = v.replace(/(\d{4})(\d)/, "$1-$2");
+  e.target.value = v;
+});
+
+// 🔥 CEP + VIA CEP
+document.getElementById("zipcode").addEventListener("input", async (e) => {
+  let cep = e.target.value.replace(/\D/g, "");
+
+  if (cep.length > 5) {
+    cep = cep.replace(/^(\d{5})(\d)/, "$1-$2");
+  }
+
+  e.target.value = cep;
+
+  if (cep.length === 9) {
+    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    const data = await res.json();
+
+    if (!data.erro) {
+      document.getElementById("street").value = data.logradouro || "";
+      document.getElementById("neighborhood").value = data.bairro || "";
+      document.getElementById("city").value = data.localidade || "";
+      document.getElementById("state").value = data.uf || "";
+    }
+  }
+});
+
+// 🚀 SALVAR (CORRIGIDO)
+async function salvar() {
+  const btn = document.querySelector(".btn");
+  btn.innerText = "Salvando...";
+  btn.disabled = true;
+
+  const payload = {
+    name: document.getElementById("name").value,
+    cnpj: document.getElementById("cnpj").value,
+    zipcode: document.getElementById("zipcode").value,
+    street: document.getElementById("street").value,
+    number: document.getElementById("number").value,
+    complement: document.getElementById("complement").value,
+    neighborhood: document.getElementById("neighborhood").value,
+    city: document.getElementById("city").value,
+    state: document.getElementById("state").value,
+    tax_rate: document.getElementById("tax").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value
+  };
+
+  console.log("ENVIANDO:", payload);
+
+  await fetch('/api/company', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  btn.innerText = "Salvar";
+  btn.disabled = false;
+
+  alert("✅ Dados da empresa salvos com sucesso!");
+}
+
+// 🚀 CARREGAR (CORRIGIDO)
+async function carregar() {
+  const res = await fetch('/api/company');
+  const data = await res.json();
+
+  console.log("CARREGADO:", data);
+
+  if (!data) return;
+
+  document.getElementById("name").value = data.name || "";
+  document.getElementById("cnpj").value = data.cnpj || "";
+  document.getElementById("zipcode").value = data.zipcode || "";
+  document.getElementById("street").value = data.street || "";
+  document.getElementById("number").value = data.number || "";
+  document.getElementById("complement").value = data.complement || "";
+  document.getElementById("neighborhood").value = data.neighborhood || "";
+  document.getElementById("city").value = data.city || "";
+  document.getElementById("state").value = data.state || "";
+  document.getElementById("tax").value = data.tax_rate || "";
+  document.getElementById("email").value = data.email || "";
+  document.getElementById("phone").value = data.phone || "";
+}
+
+carregar();
+</script>
+
+</body>
+</html>

@@ -18,43 +18,9 @@
       min-height: 100vh;
     }
 
-    .sidebar {
+    #sidebar-container {
       width: 220px;
-      min-height: 100vh;
-      background: #111;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .logo {
-      width: 140px;
-      margin-bottom: 30px;
-    }
-
-    .menu a {
-      display: block;
-      color: #aaa;
-      text-decoration: none;
-      margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 8px;
-    }
-
-    .menu a.active {
-      background: #ff9900;
-      color: black;
-      font-weight: bold;
-    }
-
-    .logout {
-      background: #222;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-      color: #aaa;
-      cursor: pointer;
+      flex-shrink: 0;
     }
 
     .main {
@@ -216,21 +182,9 @@
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <div>
-      <img src="/assets/logo.png" class="logo" />
 
-      <div class="menu">
-        <a href="/dashboard">Dashboard</a>
-        <a href="/vendas" class="active">Vendas</a>
-        <a href="/anuncios">Anúncios</a>
-        <a href="/reputacao">Reputação</a>
-        <a href="/autenticacoes">Autenticações</a>
-      </div>
-    </div>
-
-    <div class="logout">Sair</div>
-  </div>
+  <!-- SIDEBAR -->
+  <div id="sidebar-container"></div>
 
   <div class="main">
     <div class="title">Vendas</div>
@@ -286,16 +240,30 @@
               <th>Status</th>
             </tr>
           </thead>
-          <tbody id="salesTableBody">
-            <tr>
-              <td colspan="9" class="empty-state">Tela criada com sucesso. No próximo passo vamos ligar os dados reais.</td>
-            </tr>
-          </tbody>
+          <tbody id="salesTableBody"></tbody>
         </table>
       </div>
     </div>
   </div>
-  <script>
+
+<script>
+// 🔥 SIDEBAR
+fetch("/partials/sidebar.html")
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById("sidebar-container").innerHTML = data;
+
+    const currentPath = window.location.pathname;
+    const links = document.querySelectorAll("#sidebar-container .menu a");
+
+    links.forEach(link => {
+      if (link.getAttribute("href") === currentPath) {
+        link.classList.add("active");
+      }
+    });
+  });
+
+// 🔥 VENDAS
 async function carregarVendas() {
   const search = document.getElementById("search").value;
   const status = document.getElementById("status").value;
@@ -316,7 +284,6 @@ async function carregarVendas() {
   const count = document.getElementById("resultCount");
 
   tbody.innerHTML = "";
-
   count.innerText = `${data.length} vendas encontradas`;
 
   if (data.length === 0) {
@@ -355,5 +322,6 @@ window.onload = () => {
   carregarVendas();
 };
 </script>
+
 </body>
 </html>

@@ -11,9 +11,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use("/partials", express.static("src/views/partials"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("src/views"));
+
 
 
 app.use(

@@ -1,0 +1,71 @@
+<div class="sidebar">
+  <div>
+    <img src="/assets/logo.png" alt="Ebox Connect" class="logo" />
+
+    <div class="menu">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/vendas">Vendas</a>
+      <a href="/anuncios">Anúncios</a>
+      <a href="/reputacao">Reputação</a>
+      <a href="/autenticacoes">Autenticações</a>
+    </div>
+  </div>
+
+  <div class="logout">
+    <a href="/logout">Sair</a>
+  </div>
+</div>
+
+<style>
+.sidebar {
+  width: 220px;
+  height: 100vh;
+  background: #111;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.logo {
+  width: 140px;
+  margin-bottom: 30px;
+}
+
+.menu a {
+  display: block;
+  color: #aaa;
+  text-decoration: none;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.menu a:hover {
+  background: #222;
+  color: white;
+}
+
+.menu a.active {
+  background: #ff9900;
+  color: black;
+  font-weight: bold;
+}
+
+.logout a {
+  display: block;
+  background: #222;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  color: #aaa;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.logout a:hover {
+  background: #333;
+  color: white;
+}
+</style>

@@ -24,5 +24,8 @@ router.get("/login", showLoginPage);
 router.get("/register", showRegisterPage);
 router.get("/autenticacoes", authMiddleware, showAuthPage);
 router.get("/vendas", authMiddleware, showSalesPage);
+router.get("/empresa", (req, res) => {
+  res.sendFile("empresa.html", { root: "./src/views" });
+});
 
 export default router;
